@@ -16,8 +16,6 @@ namespace IngameScript.Ship
 
         IMyRemoteControl Remote;
         List<IMyGyro> Gyros;
-        IMyTextPanel lcd;
-
         List<IMyThrust> ThrustersAll;
         Dictionary<Base6Directions.Direction, List<IMyThrust>> Thrusters;
         Dictionary<Base6Directions.Direction, float> MaxThrusters;
@@ -38,15 +36,15 @@ namespace IngameScript.Ship
         {
             // Get Remote Control.
             this.Remote = GetBlock<IMyRemoteControl>();
+
+            // Check if a Remote Control or Cockpit is found.
             if (Remote == null)
-                throw new Exception("No RC");
+                throw new Exception("No Remote Controller found.");
 
             // Get Gyros.
             this.Gyros = GetBlocks<IMyGyro>();
             if (this.Gyros == null || this.Gyros.Count == 0)
-                throw new Exception("No Gyros");
-
-            lcd = GetBlock<IMyTextPanel>("LCD1");
+                throw new Exception("No Gyros found.");
 
             // Initialize the thrusters.
             InitThrusters();
@@ -152,10 +150,8 @@ namespace IngameScript.Ship
 
             foreach (var gyro in Gyros)
             {
-                if (SetRotation(gyro, forward, (vUp - vPos), "Yaw"))
-                {
-                    SetRotation(gyro, right, (vRight - vPos), "Pitch");
-                }
+                SetRotation(gyro, forward, (vUp - vPos), "Yaw");
+                SetRotation(gyro, right, (vRight - vPos), "Pitch");
             }
 
             return Gyros.Where(c => c.GyroOverride).Count() == 0;
@@ -246,7 +242,6 @@ namespace IngameScript.Ship
                 DisableThrustersOverride();
                 DisableGyroOverride();
 
-                lcd.WriteText("DONE.");
                 return true;
             }
 
@@ -443,24 +438,9 @@ namespace IngameScript.Ship
 
             // Do we need to break?
             if (stopDist * 3 >= dist)
-            {
-                // Break;
                 SetThrust(headingDir, 0);
-            }
             else
-            {
                 SetThrust(headingDir, powerPercent);
-            }
-
-            var sb = new StringBuilder();
-            sb.AppendLine(string.Format("MS: {0}", mass));
-            sb.AppendLine(string.Format("SD: {0}", stopDist));
-            sb.AppendLine(string.Format("VL: {0}", velocity));
-            sb.AppendLine(string.Format("AC: {0}", acc));
-            sb.AppendLine(string.Format("PW: {0}%", powerPercent));
-            sb.AppendLine(string.Format("Update: {0}", Program.Runtime.UpdateFrequency.ToString()));
-
-            lcd.WriteText(sb.ToString());
         }
 
         private double CalculateAcceleration(List<IMyThrust> thrusters, float shipMass, Vector3D velocityNorm)

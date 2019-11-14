@@ -1,0 +1,91 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace IngameScript.Serialization
+{
+    public class Serializer
+    {
+        public static T DeSerialize<T>(string obj) where T : Serializable, new()
+        {
+            T result = new T();
+            Dictionary<String, Field> fieldsFromString = StringToFields(obj);
+            result.LoadFields(fieldsFromString);
+            return result;
+        }
+
+        public static string Serialize(Serializable obj)
+        {
+            return obj.Serialize();
+        }
+
+        public static Dictionary<String, Field> StringToFields(string fields)
+        {
+            Dictionary<String, Field> result = new Dictionary<String, Field>();
+            string fieldName = "";
+            for (int i = 0; i < fields.Length; i++)
+            {
+                if (fields[i] == '}')
+                {
+                    return result;
+                }
+                else if (fields[i] == ':' && fields[i + 1] == '{')
+                {
+                    string subField = fields.Substring(i + 2);
+                    int subEnd = closingBracket(subField);
+                    subField = subField.Substring(0, subEnd);
+                    result.Add(fieldName, parseField(subField));
+                    i += 2 + subEnd;
+                    fieldName = "";
+                }
+                else
+                {
+                    fieldName += fields[i];
+                }
+            }
+            return result;
+        }
+
+        public static Field parseField(string field)
+        {
+            string value = "";
+            if (field.IndexOf(':') != -1)
+            {
+                return new Field(StringToFields(field));
+            }
+            for (int i = 0; i < field.Length; i++)
+            {
+                value += field[i];
+            }
+            return new Field(StringToBytes(value));
+        }
+
+        public static string BytesToString(byte[] ba)
+        {
+            string hex = BitConverter.ToString(ba);
+            return hex.Replace("-", "");
+        }
+
+        public static Byte[] StringToBytes(string byteString)
+        {
+            int NumberChars = byteString.Length;
+            byte[] bytes = new byte[NumberChars / 2];
+            for (int i = 0; i < NumberChars; i += 2)
+            {
+                bytes[i / 2] = Convert.ToByte(byteString.Substring(i, 2), 16);
+            }
+            return bytes;
+        }
+
+        public static int closingBracket(string s)
+        {
+            int nextOpening = s.IndexOf('{');
+            int nextClosing = s.IndexOf('}');
+            while (nextOpening != -1 && nextOpening < nextClosing)
+            {
+                nextOpening = s.IndexOf('{', nextOpening + 1);
+                nextClosing = s.IndexOf('}', nextClosing + 1);
+            }
+            return nextClosing;
+        }
+    }
+}

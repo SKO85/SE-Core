@@ -1,9 +1,10 @@
-﻿using IngameScript.Messages;
+﻿using IngameScript.Abstract;
+using IngameScript.Messages;
 using Sandbox.ModAPI.Ingame;
 
 namespace IngameScript.Tasks
 {
-    public abstract class Task : GridControl
+    public abstract class Task : GridController
     {
         protected BroadcastMessage Message;
         public bool IsRunning = false;

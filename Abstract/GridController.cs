@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace IngameScript
+namespace IngameScript.Abstract
 {
-    public abstract class GridControl
+    public abstract class GridController
     {
         protected MyGridProgram Program;
         protected List<IMyTerminalBlock> Blocks;
 
-        public GridControl(MyGridProgram program)
+        public GridController(MyGridProgram program)
         {
             this.Program = program;
 
@@ -37,7 +37,7 @@ namespace IngameScript
             return default(T);
         }
 
-        public List<T> GetBlocks<T>() where T : IMyTerminalBlock
+        public List<T> GetBlocks<T>() where T : class, IMyTerminalBlock
         {
             var blocks = Blocks.Where(c => c is T).ToList();
             var toReturn = new List<T>();
@@ -46,6 +46,15 @@ namespace IngameScript
                 toReturn.Add((T)block);
             }
             return toReturn;
+        }
+
+        void GetBlocks<T>(List<T> blocks) where T : class, IMyTerminalBlock
+        {
+            foreach (var block in Blocks)
+            {
+                if (block.GetType() == typeof(T))
+                    blocks.Add((T)block);
+            }
         }
     }
 }

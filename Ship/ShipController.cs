@@ -1,4 +1,5 @@
-﻿using IngameScript.Vector;
+﻿using IngameScript.Abstract;
+using IngameScript.Helpers;
 using Sandbox.ModAPI.Ingame;
 using Sandbox.ModAPI.Interfaces;
 using System;
@@ -9,7 +10,7 @@ using VRageMath;
 
 namespace IngameScript.Ship
 {
-    public class ShipControl : GridControl
+    public class ShipController : GridController
     {
         #region Properties
 
@@ -33,7 +34,7 @@ namespace IngameScript.Ship
 
         #endregion Properties
 
-        public ShipControl(MyGridProgram program) : base(program)
+        public ShipController(MyGridProgram program) : base(program)
         {
             // Get Remote Control.
             this.Remote = GetBlock<IMyRemoteControl>();

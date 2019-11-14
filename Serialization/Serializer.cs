@@ -8,7 +8,7 @@ namespace IngameScript.Serialization
         public static T DeSerialize<T>(string obj) where T : Serializable, new()
         {
             T result = new T();
-            Dictionary<String, Field> fieldsFromString = StringToFields(obj);
+            Dictionary<string, Field> fieldsFromString = StringToFields(obj);
             result.LoadFields(fieldsFromString);
             return result;
         }
@@ -18,9 +18,9 @@ namespace IngameScript.Serialization
             return obj.Serialize();
         }
 
-        public static Dictionary<String, Field> StringToFields(string fields)
+        public static Dictionary<string, Field> StringToFields(string fields)
         {
-            Dictionary<String, Field> result = new Dictionary<String, Field>();
+            Dictionary<string, Field> result = new Dictionary<string, Field>();
             string fieldName = "";
             for (int i = 0; i < fields.Length; i++)
             {
@@ -31,7 +31,7 @@ namespace IngameScript.Serialization
                 else if (fields[i] == ':' && fields[i + 1] == '{')
                 {
                     string subField = fields.Substring(i + 2);
-                    int subEnd = closingBracket(subField);
+                    int subEnd = ClosingBracket(subField);
                     subField = subField.Substring(0, subEnd);
                     result.Add(fieldName, parseField(subField));
                     i += 2 + subEnd;
@@ -65,7 +65,7 @@ namespace IngameScript.Serialization
             return hex.Replace("-", "");
         }
 
-        public static Byte[] StringToBytes(string byteString)
+        public static byte[] StringToBytes(string byteString)
         {
             int NumberChars = byteString.Length;
             byte[] bytes = new byte[NumberChars / 2];
@@ -76,7 +76,7 @@ namespace IngameScript.Serialization
             return bytes;
         }
 
-        public static int closingBracket(string s)
+        public static int ClosingBracket(string s)
         {
             int nextOpening = s.IndexOf('{');
             int nextClosing = s.IndexOf('}');

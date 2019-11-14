@@ -5,7 +5,7 @@ namespace IngameScript.Serialization
 {
     public abstract class Serializable
     {
-        protected Dictionary<String, Field> fields = new Dictionary<String, Field>();
+        protected Dictionary<string, Field> fields = new Dictionary<string, Field>();
         /// <summary>
         /// Stores all fields that need to be serialized in the fields dictionary
         /// </summary>
@@ -16,7 +16,7 @@ namespace IngameScript.Serialization
         /// Remember fields that are not saved can not be loaded!!!
         /// </summary>
         /// <param name="fields">Dictionary to take load fields from</param>
-        public abstract void LoadFields(Dictionary<String, Field> fields);
+        public abstract void LoadFields(Dictionary<string, Field> fields);
 
         /// <summary>
         /// Serializes this object and its fields to a string
@@ -32,7 +32,7 @@ namespace IngameScript.Serialization
         /// Gets the protected fields variable after the SaveToFields function is called
         /// </summary>
         /// <returns>Dictionary of fields</returns>
-        public Dictionary<String, Field> GetFields()
+        public Dictionary<string, Field> GetFields()
         {
             SaveToFields();
             return fields;

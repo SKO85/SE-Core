@@ -9,33 +9,22 @@
     <Import_RootNamespace>IngameScript</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)BaseCode\BaseScript.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Gravity\GravityGenerator.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GridControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Abstract\Script.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Abstract\GridController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\MessageFactory.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Radar\Scanner.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Ship\ShipControl.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Tasks\GoToCoordinatesTask.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Tasks\Job.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Tasks\Task.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Ship\ShipController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Abstract\Job.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Abstract\Task.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\VectorHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Unused\Docking.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Field.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Unused\LocalCoords.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Unused\Matrix.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\BroadcastMessage.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Messages\StatusMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\Message.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Serializable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Serializer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)BaseCode\TaskSystem.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Unused\ShipBackup.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Unused\Snippets.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Unused\TransformMatrix3D.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)_Unused\VectorHelper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)BaseCode\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Abstract\" />
     <Folder Include="$(MSBuildThisFileDirectory)Serialization\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Tasks\" />
   </ItemGroup>
 </Project>

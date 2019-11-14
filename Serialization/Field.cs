@@ -6,14 +6,14 @@ namespace IngameScript.Serialization
 {
     public class Field
     {
-        private Byte[] value;
+        private byte[] value;
         public Dictionary<string, Field> children = new Dictionary<string, Field>();
 
         /// <summary>
         /// Creates a field with value of a simple byte array
         /// </summary>
         /// <param name="value">Value of the field</param>
-        public Field(Byte[] value)
+        public Field(byte[] value)
         {
             this.value = value;
         }
@@ -50,7 +50,7 @@ namespace IngameScript.Serialization
 
         public Field(long value)
         {
-            this.value = longToBytes(value);
+            this.value = LongToBytes(value);
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace IngameScript.Serialization
         /// <param name="value"></param>
         public Field(string value)
         {
-            this.value = System.Text.ASCIIEncoding.ASCII.GetBytes(value);
+            this.value = System.Text.Encoding.ASCII.GetBytes(value);
         }
 
         /// <summary>
@@ -158,7 +158,7 @@ namespace IngameScript.Serialization
         /// <returns>Value as string</returns>
         public string GetString()
         {
-            return System.Text.ASCIIEncoding.ASCII.GetString(value);
+            return System.Text.Encoding.ASCII.GetString(value);
         }
 
         /// <summary>
@@ -174,10 +174,10 @@ namespace IngameScript.Serialization
 
         public long GetLong()
         {
-            return bytesToLong(value);
+            return BytesToLong(value);
         }
 
-        private static byte[] longToBytes(long l)
+        private static byte[] LongToBytes(long l)
         {
             byte[] result = new byte[8];
             for (int i = 7; i >= 0; i--)
@@ -188,7 +188,7 @@ namespace IngameScript.Serialization
             return result;
         }
 
-        private static long bytesToLong(byte[] b)
+        private static long BytesToLong(byte[] b)
         {
             long result = 0;
             for (int i = 0; i < 8; i++)
@@ -203,7 +203,7 @@ namespace IngameScript.Serialization
         /// Gets the value
         /// </summary>
         /// <returns>Byte array</returns>
-        public Byte[] GetBytes()
+        public byte[] GetBytes()
         {
             return value;
         }
@@ -231,13 +231,10 @@ namespace IngameScript.Serialization
         {
             string result = "{";
             if (value != null)
-            {
                 result += Serializer.BytesToString(value);
-            }
             else
-            {
                 result += DicToString(children);
-            }
+
             result += "}";
             return result;
         }

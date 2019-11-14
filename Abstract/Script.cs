@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace IngameScript.BaseCode
+namespace IngameScript.Abstract
 {
-    class BaseScript : MyGridProgram
+    class Script : MyGridProgram
     {
         #region BASE
 

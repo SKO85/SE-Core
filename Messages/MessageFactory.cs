@@ -7,7 +7,6 @@ namespace IngameScript.Messages
         public static Message Get(string name, string data)
         {
             var type = name.ToLower().Trim();
-
             if (type == "broadcast")
                 return Serializer.DeSerialize<BroadcastMessage>(data);
             else if (type == "" || type == "message")

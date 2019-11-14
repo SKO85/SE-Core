@@ -2,7 +2,7 @@
 using System;
 using VRageMath;
 
-namespace IngameScript.Vector
+namespace IngameScript.Helpers
 {
     class VectorHelper
     {
@@ -74,7 +74,6 @@ namespace IngameScript.Vector
 
         public static void GetRotationAngles(Vector3D v_target, Vector3D v_front, Vector3D v_left, Vector3D v_up, out double yaw, out double pitch)
         {
-            //Dependencies: VectorProjection() | VectorAngleBetween()
             var projectTargetUp = VectorProject(v_target, v_up);
             var projTargetFrontLeft = v_target - projectTargetUp;
 
@@ -85,14 +84,14 @@ namespace IngameScript.Vector
             else
                 pitch = VectorAngleBetween(v_target, projTargetFrontLeft); //pitch should not exceed 90 degrees by nature of this definition
 
-            //---Check if yaw angle is left or right
-            //multiplied by -1 to convert from right hand rule to left hand rule
+            // Check if yaw angle is left or right
+            // Multiplied by -1 to convert from right hand rule to left hand rule
             yaw = -1 * Math.Sign(v_left.Dot(v_target)) * yaw;
 
-            //---Check if pitch angle is up or down
+            // Check if pitch angle is up or down
             pitch = Math.Sign(v_up.Dot(v_target)) * pitch;
 
-            //---Check if target vector is pointing opposite the front vector
+            // Check if target vector is pointing opposite the front vector
             if (Math.Abs(yaw) <= 1E-6 && v_target.Dot(v_front) < 0)
             {
                 yaw = Math.PI;

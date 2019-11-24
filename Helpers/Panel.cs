@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using VRage.Game;
 
-namespace IngameScript.Helpers
+namespace SKO85Core.Helpers
 {
     public static class Panel
     {

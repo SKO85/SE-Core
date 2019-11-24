@@ -1,12 +1,12 @@
-﻿using IngameScript.Abstract;
-using IngameScript.Helpers;
-using Sandbox.ModAPI.Ingame;
+﻿using Sandbox.ModAPI.Ingame;
 using Sandbox.ModAPI.Interfaces;
+using SKO85Core.Abstract;
+using SKO85Core.Helpers;
 using System;
 using System.Collections.Generic;
 using VRageMath;
 
-namespace IngameScript
+namespace SKO85Core
 {
     public class Ship
     {

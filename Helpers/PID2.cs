@@ -1,4 +1,4 @@
-﻿namespace IngameScript.Helpers
+﻿namespace SKO85Core.Helpers
 {
     public class PID2
     {

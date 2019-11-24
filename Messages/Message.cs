@@ -1,7 +1,7 @@
-﻿using IngameScript.Serialization;
+﻿using SKO85Core.Serialization;
 using System.Collections.Generic;
 
-namespace IngameScript.Messages
+namespace SKO85Core.Messages
 {
     public class Message : Serializable
     {

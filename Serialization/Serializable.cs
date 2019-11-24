@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace IngameScript.Serialization
+namespace SKO85Core.Serialization
 {
     public abstract class Serializable
     {

@@ -1,6 +1,6 @@
-﻿using IngameScript.Serialization;
+﻿using SKO85Core.Serialization;
 
-namespace IngameScript.Messages
+namespace SKO85Core.Messages
 {
     public class MessageFactory
     {

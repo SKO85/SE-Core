@@ -2,7 +2,7 @@
 using System;
 using VRageMath;
 
-namespace IngameScript.Helpers
+namespace SKO85Core.Helpers
 {
     class VectorHelper
     {

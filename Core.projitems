@@ -13,11 +13,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Panel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Abstract\Script.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Abstract\Grid.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Work\Actions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Work\Wait.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Menu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\PID.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\PID2.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Work\Action.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Work\Arguments.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Work\TaskFlow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Work\Task.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\MessageFactory.cs" />

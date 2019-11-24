@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace IngameScript
+namespace SKO85Core
 {
     public class Menu
     {

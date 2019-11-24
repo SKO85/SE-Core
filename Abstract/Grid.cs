@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using VRage.Game.ModAPI.Ingame.Utilities;
 
-namespace IngameScript.Abstract
+namespace SKO85Core.Abstract
 {
     public abstract class Grid
     {

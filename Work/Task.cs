@@ -1,7 +1,7 @@
-﻿using IngameScript.Serialization;
+﻿using SKO85Core.Serialization;
 using System.Collections.Generic;
 
-namespace IngameScript.Work
+namespace SKO85Core.Work
 {
     public class Task
     {

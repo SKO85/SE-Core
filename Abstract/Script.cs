@@ -1,11 +1,11 @@
-﻿using IngameScript.Work;
-using Sandbox.ModAPI.Ingame;
+﻿using Sandbox.ModAPI.Ingame;
+using SKO85Core.Work;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace IngameScript.Abstract
+namespace SKO85Core.Abstract
 {
     public abstract class Script : Grid
     {

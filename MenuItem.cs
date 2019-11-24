@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace IngameScript
+namespace SKO85Core
 {
     public class MenuItem
     {

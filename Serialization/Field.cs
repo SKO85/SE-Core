@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using VRageMath;
 
-namespace IngameScript.Serialization
+namespace SKO85Core.Serialization
 {
     public class Field
     {

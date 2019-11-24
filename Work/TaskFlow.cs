@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace IngameScript.Work
+namespace SKO85Core.Work
 {
     public class TaskFlow
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace IngameScript.Serialization
+namespace SKO85Core.Serialization
 {
     public class Serializer
     {

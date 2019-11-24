@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace IngameScript.Work
+namespace SKO85Core.Work
 {
     public static class Actions
     {

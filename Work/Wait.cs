@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace IngameScript.Work
+namespace SKO85Core.Work
 {
     public class Wait
     {

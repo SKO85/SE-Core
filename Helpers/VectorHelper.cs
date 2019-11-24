@@ -29,13 +29,16 @@ namespace IngameScript.Helpers
             return new Vector3(x, y, z);
         }
 
-        public static double AngleBetween(Vector3 vector1, Vector3 vector2)
+        public static double AngleBetween(Vector3D a, Vector3D b)
         {
-            Vector3 nvector1 = Normalize(vector1);
-            Vector3 nvector2 = Normalize(vector2);
-            double dot = (nvector1.X * nvector2.X) + (nvector1.Y * nvector2.Y) + (nvector1.Z * nvector2.Z);
-            double angOut = Math.Acos(dot);
-            return angOut;
+            if (Vector3D.IsZero(a) || Vector3D.IsZero(b))
+                return 0;
+
+            // Clamped due to floating point errors
+            if (Vector3D.IsUnit(ref a) && Vector3D.IsUnit(ref b))
+                return Math.Acos(MathHelper.Clamp(a.Dot(b), -1, 1));
+
+            return Math.Acos(MathHelper.Clamp(a.Dot(b) / Math.Sqrt(a.LengthSquared() * b.LengthSquared()), -1, 1));
         }
 
         public static int AngleDir(Vector3 fwd, Vector3 targetDir, Vector3 up)
@@ -141,9 +144,6 @@ namespace IngameScript.Helpers
 
         public static Vector3D VectorProject(Vector3D a, Vector3D b)
         {
-            if (Vector3D.IsZero(b))
-                return Vector3D.Zero;
-
             return a.Dot(b) / b.LengthSquared() * b;
         }
     }

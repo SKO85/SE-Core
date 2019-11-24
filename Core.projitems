@@ -9,12 +9,19 @@
     <Import_RootNamespace>IngameScript</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)MenuItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\Panel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Abstract\Script.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Abstract\GridController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Abstract\Grid.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Work\Wait.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Menu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\PID.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\PID2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Work\Action.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Work\TaskFlow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Work\Task.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\MessageFactory.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Ship\ShipController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Abstract\Job.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Abstract\Task.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Ship.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\VectorHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Field.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\BroadcastMessage.cs" />
@@ -23,8 +30,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Serializer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Abstract\" />
     <Folder Include="$(MSBuildThisFileDirectory)Serialization\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Tasks\" />
+    <Folder Include="$(MSBuildThisFileDirectory)_Externals\" />
   </ItemGroup>
 </Project>

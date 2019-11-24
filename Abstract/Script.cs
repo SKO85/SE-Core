@@ -119,7 +119,7 @@ namespace SKO85Core.Abstract
         #region Abstract Functions
 
         abstract protected void Init();
-        abstract protected void Run(Queue<string> arguments);
+        abstract protected void Run();
 
         #endregion Abstract Functions
 
@@ -276,24 +276,40 @@ namespace SKO85Core.Abstract
 
         #endregion Communication
 
-        #region Main
+        #region Arguments
 
-        private Queue<string> Arguments = new Queue<string>();
+        private Queue<string> Args = new Queue<string>();
+        private void HandleArguments()
+        {
+            if (Args != null)
+            {
+                while (Args.Count != 0)
+                {
+                    Arguments.Run(Args.Dequeue());
+                }
+            }
+        }
+        private void AddArgument(string arg)
+        {
+            // Handle argument.
+            if (!string.IsNullOrEmpty(arg))
+            {
+                Args.Enqueue(arg);
+            }
+        }
+
+        #endregion Arguments
+
+        #region Main
 
         public void Main(string argument)
         {
-            // Handle argument.
-            if (!string.IsNullOrEmpty(argument))
-            {
-                Arguments.Enqueue(argument);
-            }
+            // Add argument to the queue.
+            AddArgument(argument);
 
             // If the update frequency is set to None, then simply return and do not do anything.
             if (this.Update == UpdateFrequency.None)
                 return;
-
-            // Handle messages.
-            HandleMessages();
 
             // Get the runtime and add it to the Script Runtime.
             ScriptRunTime += Program.Runtime.TimeSinceLastRun.TotalMilliseconds;
@@ -303,15 +319,21 @@ namespace SKO85Core.Abstract
                 return;
             else
             {
+                // Handle any arguments provided.
+                HandleArguments();
+
+                // Handle messages.
+                HandleMessages();
+
+                // If any Timeout are present, handle them first.
+                HandleWait();
+
                 // Reset runtime.
                 ScriptRunTime = 0;
 
                 // Call the Script Run code.
-                Run(Arguments);
+                Run();
             }
-
-            // If any Timeout are present, handle them first.
-            HandleWait();
 
             // Calculate avarage Execution Time.
             CalculateAverageExecutionTime();

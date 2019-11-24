@@ -5,7 +5,7 @@ namespace SKO85Core.Work
 {
     public static class Actions
     {
-        public static Dictionary<string, Action> ActionHandlers = new System.Collections.Generic.Dictionary<string, Action>();
+        public static Dictionary<string, Action> ActionHandlers = new Dictionary<string, Action>();
 
         public static void On(string actionName, Action actionCallback)
         {

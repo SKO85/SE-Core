@@ -40,7 +40,7 @@ namespace IngameScript
             // ...
         }
 
-        protected override void Run(Queue<string> arguments)
+        protected override void Run()
         {
             // Your main code goes here.
             // ...
@@ -77,25 +77,10 @@ namespace IngameScript
 To define argument actions with callbacks, use this in your init function of your script.
 
 ```cs
-Actions.On("MyArgumentAction", () =>
+Arguments.On("MyArgumentAction", () =>
 {
     // Do whatever you need to do when MyArgumentAction is provided to the Run.
     // ...
 });
 ```
 
-
-To execute the queue of argument actions, you can use this in your script Run code.
-
-```cs
-protected override void Run(Queue<string> arguments)
-{
-    while (arguments.Count != 0)
-    {
-        Actions.Run(arguments.Dequeue());
-    }
-    
-    // Other code.
-    // ...
-}
-```

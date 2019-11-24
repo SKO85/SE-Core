@@ -2,7 +2,7 @@
 SKO85's Space Engineers In-Game Scripting Core Library
 
 # About
-This library contains seveal classes and helpers that I use with the SE-MDK to create my scripts.
+This library contains several classes and helpers that I use with the SE-MDK to create my scripts.
 
 # Features
 More will be added soon, but the following is already in the library:

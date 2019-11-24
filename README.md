@@ -2,7 +2,7 @@
 SKO85's Space Engineers In-Game Scripting Core Library
 
 # About
-This library contains seveal classes and helpers that I use with the SE-MDK to create my scripts.
+This library contains several classes and helpers that I use with the SE-MDK to create my scripts.
 
 # Features
 More will be added soon, but the following is already in the library:
@@ -21,7 +21,7 @@ More will be added soon, but the following is already in the library:
 I don't have much time to write down all examples, but will try to update this section soon. Let me know if you have questions via de Issues section.
 
 ## Defining a Script
-```
+```cs
 using Sandbox.ModAPI.Ingame;
 using SKO85Core.Abstract;
 using System.Collections.Generic;
@@ -40,7 +40,7 @@ namespace IngameScript
             // ...
         }
 
-        protected override void Run(Queue<string> arguments)
+        protected override void Run()
         {
             // Your main code goes here.
             // ...
@@ -51,7 +51,7 @@ namespace IngameScript
 
 Your Program.cs looks like this then.
 
-```
+```cs
 using Sandbox.ModAPI.Ingame;
 
 namespace IngameScript
@@ -76,26 +76,10 @@ namespace IngameScript
 ## Argument Actions
 To define argument actions with callbacks, use this in your init function of your script.
 
-```
-Actions.On("MyArgumentAction", () =>
+```cs
+Arguments.On("MyArgumentAction", () =>
 {
     // Do whatever you need to do when MyArgumentAction is provided to the Run.
     // ...
 });
-```
-
-
-To execute the queue of argument actions, you can use this in your script Run code.
-
-```
-protected override void Run(Queue<string> arguments)
-{
-    while (arguments.Count != 0)
-    {
-        Actions.Run(arguments.Dequeue());
-    }
-    
-    // Other code.
-    // ...
-}
 ```

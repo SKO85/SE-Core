@@ -21,7 +21,7 @@ More will be added soon, but the following is already in the library:
 I don't have much time to write down all examples, but will try to update this section soon. Let me know if you have questions via de Issues section.
 
 ## Defining a Script
-```
+```cs
 using Sandbox.ModAPI.Ingame;
 using SKO85Core.Abstract;
 using System.Collections.Generic;
@@ -51,7 +51,7 @@ namespace IngameScript
 
 Your Program.cs looks like this then.
 
-```
+```cs
 using Sandbox.ModAPI.Ingame;
 
 namespace IngameScript
@@ -76,7 +76,7 @@ namespace IngameScript
 ## Argument Actions
 To define argument actions with callbacks, use this in your init function of your script.
 
-```
+```cs
 Actions.On("MyArgumentAction", () =>
 {
     // Do whatever you need to do when MyArgumentAction is provided to the Run.
@@ -87,7 +87,7 @@ Actions.On("MyArgumentAction", () =>
 
 To execute the queue of argument actions, you can use this in your script Run code.
 
-```
+```cs
 protected override void Run(Queue<string> arguments)
 {
     while (arguments.Count != 0)

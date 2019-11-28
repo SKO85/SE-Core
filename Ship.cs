@@ -2,6 +2,7 @@
 using Sandbox.ModAPI.Interfaces;
 using SKO85Core.Abstract;
 using SKO85Core.Helpers;
+using SKO85Core.Scanner;
 using System;
 using System.Collections.Generic;
 using VRageMath;
@@ -19,9 +20,18 @@ namespace SKO85Core
         private List<IMyThrust> ThrustersAll;
         private Dictionary<Base6Directions.Direction, List<IMyThrust>> Thrusters;
         private Dictionary<Base6Directions.Direction, float> MaxThrusters;
+        private List<IMyCameraBlock> Scanners { get; set; }
+        private IEnumerator<bool> Scanner { get; set; }
+        private bool CollisionFound = false;
+        private Vector3D[] ScanVectors = new Vector3D[] { Vector3D.Left, Vector3D.Right, Vector3D.Up, Vector3D.Down };
+        private HashSet<long> GridHash { get; set; }
+        private double StopDistance = 0;
 
         private DateTime LastChecked;
+
         private Vector3D CurrentWaypoint;
+        private Stack<Vector3D> Waypoints;
+
         private Vector3D VelocityVector = new Vector3D();
         private Vector3D AccelerationVector = new Vector3D();
         private Vector3D Pos;
@@ -29,8 +39,8 @@ namespace SKO85Core
 
         private const float MinAngleRad = 0.3f;
         private const double CTRL_COEFF = 0.2;
-        private const double DistanceAccuracy = 0.4;
-        private const int MinRemoteControlDistance = 200;
+        private const double DistanceAccuracy = 0.3;
+        private const int MinRemoteControlDistance = 2000;
         private const double eps = 1E-4;
 
         #endregion Properties
@@ -66,6 +76,17 @@ namespace SKO85Core
             PitchPID = new PID(5, 0, 3, 0.75);
             YawPID = new PID(5, 0, 3, 0.75);
             RollPID = new PID(5, 0, 3, 0.75);
+
+            // Get scan cammera's.
+            Scanners = Script.GetBlocks<IMyCameraBlock>();
+            RayTracer.EnableRaycast(Scanners, true);
+
+            // Get Ship Grid Hash.
+            GridHash = new HashSet<long>();
+            GetShipGrids(GridHash);
+
+            // Waypoints.
+            Waypoints = new Stack<Vector3D>();
         }
 
         private void InitThrusters()
@@ -149,28 +170,41 @@ namespace SKO85Core
         {
             if (block == null)
                 block = Remote;
-            return VectorHelper.DistanceBetween(vPos, block);
+
+            return Math.Abs(Math.Abs(VectorHelper.DistanceBetween(vPos, block)) - DistanceAccuracy);
         }
         public bool GoToPosition(Vector3D vPos, IMyTerminalBlock block = null, bool useAutoPilot = true, bool alignTo = true)
         {
             if (block == null)
                 block = Remote;
 
-            if (block != Remote)
+            if (block != Remote && Waypoints.Count == 0)
             {
                 // Apply offset.
                 Vector3D offset = (Remote.GetPosition() - block.GetPosition());
                 vPos = (vPos + offset);
             }
 
-            double distance = DistanceTo(vPos, Remote);
-            this.Script.Program.Echo(distance.ToString());
+            if (Waypoints.Count == 0)
+                Waypoints.Push(vPos);
 
-            if (distance <= DistanceAccuracy && VelocityVector.Length() <= 0.05)
+            double distance = DistanceTo(Waypoints.Peek());
+            Script.Program.Echo("Distance: " + distance.ToString());
+            Script.Program.Echo("Waypoints: " + Waypoints.Count.ToString());
+            if (Waypoints.Count == 1 && distance <= DistanceAccuracy && VelocityVector.Length() <= 0.1)
             {
+                Script.Program.Echo("Done: " + distance.ToString());
                 Reset();
+                Waypoints.Pop();
                 return true;
             }
+            else if (Waypoints.Count > 1 && distance <= 5)
+            {
+                // Remove the last waypoint.
+                Waypoints.Pop();
+            }
+
+            distance = DistanceTo(Waypoints.Peek());
 
             // Use Remote Control when the minimal distance has been reached.
             if (distance >= MinRemoteControlDistance && useAutoPilot)
@@ -178,8 +212,7 @@ namespace SKO85Core
                 if (!Remote.IsAutoPilotEnabled)
                 {
                     // Set waypoint.
-                    Remote.AddWaypoint(vPos, "GoToPosition");
-                    CurrentWaypoint = vPos;
+                    Remote.AddWaypoint(Waypoints.Peek(), "GoToPosition");
 
                     // Use RC for flying.
                     EnableAutoPilot(true);
@@ -191,12 +224,41 @@ namespace SKO85Core
                 EnableAutoPilot(false);
 
                 // Align if required.
-                if (alignTo && !AlignBlockTo(vPos, block))
+                if (distance > 10 && alignTo)
                 {
-                    return false;
+                    if (Waypoints.Count == 1 && !AlignBlockTo(Waypoints.Peek(), block))
+                    {
+                        DisableThrustersOverride();
+                        return false;
+                    }
+                    else if (Waypoints.Count > 1 && !AlignBlockTo(Waypoints.Peek(), block, false))
+                    {
+                        DisableThrustersOverride();
+                        return false;
+                    }
                 }
 
-                if (GoToWithThrusters(vPos, block))
+                if (alignTo && HasCollisions(Waypoints.Peek()))
+                {
+                    // Check distance.
+                    var collisionDistance = DistanceTo(RayTracer.DetectedEntityInfo.Position);
+                    if (distance + 35 > collisionDistance)
+                    {
+                        FindCollisionAvoidance();
+                        return false;
+                    }
+                    else
+                    {
+                        CollisionFound = false;
+                    }
+                }
+                else
+                {
+                    CollisionFound = false;
+                }
+
+                Script.Program.Echo("Collision: " + CollisionFound.ToString());
+                if (!CollisionFound && GoToWithThrusters(Waypoints.Peek(), block))
                 {
                     Reset();
                     return true;
@@ -205,6 +267,31 @@ namespace SKO85Core
 
             return false;
         }
+
+        private void FindCollisionAvoidance()
+        {
+            // If we came back here and have additional waypoints, remove it as it does not fit to avoid a collision.
+            if (Waypoints.Count > 1)
+                Waypoints.Pop();
+
+            // Check distance.
+            var collisionDistance = DistanceTo(RayTracer.DetectedEntityInfo.Position);
+            var transVectror = Vector3D.TransformNormal(RayTracer.DetectedEntityInfo.Position, MatrixD.Transpose(Remote.WorldMatrix));
+            Vector3D moveDir;
+
+            // Define if we should go left or right.
+            if (transVectror.X > 0)
+                moveDir = Remote.WorldMatrix.Up;    // Left.
+            else
+                moveDir = Remote.WorldMatrix.Down;  // Right.
+
+            var newDirection = Vector3D.Transform(Remote.WorldMatrix.Forward, Quaternion.CreateFromAxisAngle(moveDir, (float)Math.PI / 15.0f));
+            var newTarget = Remote.GetPosition() + collisionDistance * newDirection;
+
+            // Set new waypoint to try.
+            Waypoints.Push(newTarget);
+        }
+
         public void EnableAutoPilot(bool enable, bool precise = true)
         {
             if (Remote != null)
@@ -249,7 +336,7 @@ namespace SKO85Core
             DisableThrustersOverride();
             DisableGyroOverride();
         }
-        public bool AlignBlockTo(Vector3D vPos, IMyTerminalBlock block = null)
+        public bool AlignBlockTo(Vector3D vPos, IMyTerminalBlock block = null, bool precise = true)
         {
             if (block == null)
                 block = Remote;
@@ -265,7 +352,12 @@ namespace SKO85Core
             // Check angle.
             var angleF = VectorHelper.AngleBetween(vTarget, m.Forward);
             this.Script.Program.Echo(string.Format("Angle: {0}", angleF));
-            if (angleF <= 0.01)
+            if (precise && angleF <= 0.01)
+            {
+                DisableGyroOverride();
+                return true;
+            }
+            else if (!precise && angleF <= 0.1)
             {
                 DisableGyroOverride();
                 return true;
@@ -285,6 +377,24 @@ namespace SKO85Core
             // Return not aligned for now. Will keep aligning :)
             return false;
         }
+
+        public bool HasCollisions(Vector3D vPos)
+        {
+            if (RayTracer.Trace(vPos, Scanners, Math.Min(StopDistance + 10, 2000)))
+            {
+                // Center of BBox: RayTracer.DetectedEntityInfo.Position
+                // Hit Position:   RayTracer.DetectedEntityInfo.HitPosition.Value
+
+                CollisionFound = true;
+                Script.Program.Echo("COLLISION DETECTED.");
+            }
+            else
+            {
+                CollisionFound = false;
+            }
+            return CollisionFound;
+        }
+
         public bool AlignBlockAs(Vector3D tForward, Vector3D tDown, IMyTerminalBlock block = null, bool reverse = false)
         {
             if (Remote.IsAutoPilotEnabled)
@@ -297,11 +407,17 @@ namespace SKO85Core
             var angleHV = VectorHelper.AngleBetween(tForward, m.Forward);
             var angleRoll = VectorHelper.AngleBetween(tDown, m.Down);
 
+            this.Script.Program.Echo(angleHV.ToString());
+            this.Script.Program.Echo(angleRoll.ToString());
+
             // If aligned enough, then stop the rotations.
-            if (angleHV <= 0.0004 && angleRoll <= 0.0004)
+            if (angleHV <= 0.0005 && angleRoll <= 0.0005)
             {
-                this.Script.Program.Echo(angleHV.ToString());
-                this.Script.Program.Echo(angleRoll.ToString());
+                DisableGyroOverride();
+                return true;
+            }
+            else if (angleHV <= 0.001 && angleRoll <= 0.001 && Math.Round(Remote.GetShipSpeed(), 2) <= 0.01)
+            {
                 DisableGyroOverride();
                 return true;
             }
@@ -399,11 +515,24 @@ namespace SKO85Core
             if (double.IsNaN(stopDist))
                 stopDist = 0;
 
+            StopDistance = stopDist;
+
+            bool finalApproach = Waypoints.Count == 1;
+
+            if (finalApproach)
+                stopDist = stopDist * 1.2;
+            else if (!finalApproach)
+                stopDist = stopDist * 1.5;
+            else if (dist > 300)
+            {
+                // stopDist = stopDist * 2;
+            }
+
             // Calculate the power percentage to use based on distance.
             double powerPercent = MathHelper.Clamp(dist / 100, 0.3, 1) * 100;
 
             // Do we need to break?
-            if (stopDist * 3 >= dist)
+            if (stopDist >= dist)
                 SetThrust(headingDir, 0);
             else
                 SetThrust(headingDir, powerPercent);
@@ -440,10 +569,6 @@ namespace SKO85Core
         }
         private bool GoToWithThrusters(Vector3D vPos, IMyTerminalBlock block = null)
         {
-            // Set block to RC if nothing else is specfied.
-            if (block == null)
-                block = Remote;
-
             if (DistanceTo(vPos) <= DistanceAccuracy)
             {
                 return true;
@@ -534,7 +659,77 @@ namespace SKO85Core
                 yaw = Math.PI;
         }
 
+        private void GetShipGrids(HashSet<long> gHash)
+        {
+            gHash.Clear();
+            gHash.Add(Script.Program.Me.CubeGrid.EntityId);
+
+            Script.Program.GridTerminalSystem.GetBlocksOfType<IMyTerminalBlock>(null, x =>
+            {
+                if (x.IsSameConstructAs(Script.Program.Me))
+                    gHash.Add(x.CubeGrid.EntityId);
+
+                return false;
+            });
+        }
+
+        private bool IsMe(MyDetectedEntityInfo info)
+        {
+            return GridHash.Contains(info.EntityId);
+        }
+
         #endregion Private Functions
+
+        #region Scanner
+
+        bool _collisionFound = false;
+        double _stopDistance = 0;
+        IEnumerator<bool> ScanForCollisions(Vector3D targetPos)
+        {
+            while (true)
+            {
+                // Calculate the current stopping distance, adding a little extra
+                double stopDistance = _stopDistance + 100;
+
+                var position = Remote.GetPosition();
+
+                // Get the direction to the current waypoint
+                Vector3D dirVec = Vector3D.Normalize(targetPos - position);
+
+                // Determine the position to scan around
+                Vector3D posVec = double.IsInfinity(stopDistance) ? position : position + (dirVec * stopDistance);
+
+                int count = 0;
+
+                for (int i = 0; i < Scanners.Count; i++)
+                {
+                    var cam = Scanners[i];
+
+                    if (cam.CanScan(stopDistance))
+                    {
+                        int next = i % ScanVectors.Length;
+                        count++;
+
+                        MyDetectedEntityInfo info = cam.Raycast(posVec + (i * ScanVectors[next]));
+
+                        // Check if something is in the flight path
+                        if (!info.IsEmpty() && !IsMe(info))
+                            _collisionFound = true;
+                    }
+
+                    if (count > 3)
+                    {
+                        count = 0;
+                        yield return false;
+                    }
+                }
+
+                _collisionFound = false;
+                yield return false;
+            }
+        }
+
+        #endregion Scanner
 
         #region Experimental
 

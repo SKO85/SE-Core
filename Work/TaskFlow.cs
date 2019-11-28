@@ -117,6 +117,11 @@ namespace SKO85Core.Work
             this.State = TaskFlowState.Idle;
         }
 
+        public void Clear()
+        {
+            Tasks.Clear();
+        }
+
         public bool Abort()
         {
             bool isJobAborted = true;

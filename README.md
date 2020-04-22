@@ -1,3 +1,5 @@
+# Work in progress - UNSTABLE
+
 # SE-Core
 SKO85's Space Engineers In-Game Scripting Core Library
 
